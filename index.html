@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>3D Chess - Tag Game</title>
+    <link href="style.css" rel="stylesheet" type="text/css" />
+    <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+</head>
+<body>
+    <a-scene>
+        <!-- Camera setup -->
+        <a-entity camera position="0 10 0" rotation="-90 0 0"></a-entity>
+        
+        <!-- Player 1 and Player 2 -->
+        <a-box id="player1" color="blue" position="-4 1.5 0" width="1" depth="1" height="1"></a-box>
+        <a-box id="player2" color="red" position="4 1.5 0" width="1" depth="1" height="1"></a-box>
+
+        <!-- Ground plane -->
+        <a-plane position="0 0 0" rotation="-90 0 0" width="20" height="20" color="#7BC8A4"></a-plane>
+        
+        <!-- Obstacles -->
+        <a-box color="gray" position="0 0.5 -2" width="2" depth="2" height="1"></a-box>
+        <a-box color="gray" position="3 0.5 3" width="1" depth="4" height="1"></a-box>
+        <a-box color="gray" position="-3 0.5 3" width="1" depth="4" height="1"></a-box>
+        <a-box color="gray" position="3 0.5 -3" width="4" depth="1" height="1"></a-box>
+        <a-box color="gray" position="-3 0.5 -3" width="4" depth="1" height="1"></a-box>
+
+        <!-- Sky -->
+        <a-sky color="#ECECEC"></a-sky>
+    </a-scene>
+
+    <script>
+        // Movement variables
+        const speed = 0.1;
+
+        // Player references
+        const player1 = document.getElementById('player1');
+        const player2 = document.getElementById('player2');
+
+        // Player positions
+        let player1Pos = player1.object3D.position;
+        let player2Pos = player2.object3D.position;
+
+        // Function to handle collision detection
+        function checkCollision(playerPos, deltaX, deltaZ) {
+            // Placeholder for more advanced collision detection logic
+            const obstacles = [
+                {x: 0, z: -2, width: 2, depth: 2},
+                {x: 3, z: 3, width: 1, depth: 4},
+                {x: -3, z: 3, width: 1, depth: 4},
+                {x: 3, z: -3, width: 4, depth: 1},
+                {x: -3, z: -3, width: 4, depth: 1},
+            ];
+
+            for (const obstacle of obstacles) {
+                const withinX = playerPos.x + deltaX > obstacle.x - obstacle.width / 2 &&
+                                playerPos.x + deltaX < obstacle.x + obstacle.width / 2;
+                const withinZ = playerPos.z + deltaZ > obstacle.z - obstacle.depth / 2 &&
+                                playerPos.z + deltaZ < obstacle.z + obstacle.depth / 2;
+                if (withinX && withinZ) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        // Event listener for key presses
+        window.addEventListener('keydown', function(event) {
+            switch (event.key) {
+                // Player 1 controls (WASD)
+                case 'w':
+                    if (!checkCollision(player1Pos, 0, -speed)) player1Pos.z -= speed;
+                    break;
+                case 'a':
+                    if (!checkCollision(player1Pos, -speed, 0)) player1Pos.x -= speed;
+                    break;
+                case 's':
+                    if (!checkCollision(player1Pos, 0, speed)) player1Pos.z += speed;
+                    break;
+                case 'd':
+                    if (!checkCollision(player1Pos, speed, 0)) player1Pos.x += speed;
+                    break;
+                // Player 2 controls (Arrow keys)
+                case 'ArrowUp':
+                    if (!checkCollision(player2Pos, 0, -speed)) player2Pos.z -= speed;
+                    break;
+                case 'ArrowLeft':
+                    if (!checkCollision(player2Pos, -speed, 0)) player2Pos.x -= speed;
+                    break;
+                case 'ArrowDown':
+                    if (!checkCollision(player2Pos, 0, speed)) player2Pos.z += speed;
+                    break;
+                case 'ArrowRight':
+                    if (!checkCollision(player2Pos, speed, 0)) player2Pos.x += speed;
+                    break;
+            }
+        });
+    </script>
+</body>
+</html>
